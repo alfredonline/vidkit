@@ -1,4 +1,4 @@
-import { isValidYouTubeVideoURL } from '../youtube/index';
+import { getYouTubeVideoId, isValidYouTubeVideoURL } from '../youtube/index';
 
 describe('isValidYouTubeVideoURL', () => {
   // Test valid URLs
@@ -19,7 +19,6 @@ describe('isValidYouTubeVideoURL', () => {
       expect(result.videoId).toBe('dQw4w9WgXcQ');
       expect(result.error).toBeUndefined();
     });
-
   });
 
   // Test invalid URLs
@@ -101,5 +100,17 @@ describe('isValidYouTubeVideoURL', () => {
     const result = isValidYouTubeVideoURL('https://youtu.be/aaaaaaaaaaa');
     expect(result.isValid).toBe(false);
     expect(result.error).toMatch(/repeated characters/i);
+  });
+});
+
+describe('getYouTubeVideoId', () => {
+  test('should return the video ID from a valid YouTube URL', () => {
+    const result = getYouTubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+    expect(result).toBe('dQw4w9WgXcQ');
+  });
+
+  test('should return null for invalid YouTube URLs', () => {
+    const result = getYouTubeVideoId('invalid-url');
+    expect(result).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 # Vidkit
 
-A toolkit of utilities for developers working with video platform URLs.
+A set of utilities for developers working with video platform URLs.
 
 ## Installation
 
@@ -38,6 +38,20 @@ if (!result.isValid) {
 }
 ```
 
+### Get Video ID
+
+```typescript
+import { getYouTubeVideoId } from 'vidkit';
+
+// Basic usage
+const videoId = getYouTubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+console.log(videoId); // 'dQw4w9WgXcQ'
+
+// Invalid URL
+const videoId = getYouTubeVideoId('invalid-url');
+console.log(videoId); // null
+```
+
 ## API Reference
 
 ### `isValidYouTubeVideoURL(url: string, options?: URLValidationOptions): URLValidationResult`
@@ -58,6 +72,18 @@ A `URLValidationResult` object with:
 - `videoId` (string | undefined): The video ID if valid
 - `error` (string | undefined): Error message if invalid
 
+### `getYouTubeVideoId(url: string): string | null`
+
+Extracts the video ID from a YouTube URL. Returns null if the URL is invalid.
+
+#### Parameters
+
+- `url` (string): The YouTube URL to extract the video ID from (supports all valid YouTube URL formats)
+
+#### Returns
+
+- `string | null`: The video ID if the URL is valid, null otherwise
+
 ## Development
 
 1. Clone the repository
@@ -76,7 +102,63 @@ A `URLValidationResult` object with:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. 
+We welcome contributions to Vidkit! Here's how you can help:
+
+### Adding Support for New Video Platforms
+
+1. Create a new folder in the `src/utils` directory named after the platform (e.g., `vimeo`, `dailymotion`)
+2. Implement the following files in your platform folder:
+   - `index.ts` - Main implementation file
+   - `types.ts` - TypeScript type definitions
+   - `constants.ts` - Platform-specific constants
+   - `index.test.ts` - Unit tests
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a new branch for your feature:
+   ```bash
+   git checkout -b feature/your-platform-name
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Make your changes
+5. Run tests:
+   ```bash
+   npm test
+   ```
+6. Build the package:
+   ```bash
+   npm run build
+   ```
+7. Submit a pull request
+
+### Code Style Guidelines
+
+- Follow the existing code style and patterns
+- Use TypeScript for all new code
+- Write comprehensive JSDoc comments for all public functions
+- Keep functions pure and focused on a single responsibility
+- Export all public functions through the main `index.ts`
+
+### Testing Requirements
+
+- Write unit tests for all new functionality
+- Include tests for edge cases and error conditions
+- Maintain 100% test coverage for new code
+- Follow the existing test patterns in `index.test.ts`
+
+### Pull Request Process
+
+1. Update the README.md with documentation for your new features
+2. Ensure all tests pass
+4. Submit your PR with a clear description of the changes
+
+### Questions or Need Help?
+
+Feel free to open an issue for any questions or clarifications needed.
 
 ## License
 
