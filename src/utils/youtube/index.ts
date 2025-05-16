@@ -1,62 +1,61 @@
 import { URLValidationOptions, URLValidationResult } from '../../types';
 
-/**
- * Validates a YouTube video URL and extracts the video ID
- * @param url - The YouTube URL to validate
- * @param options - Optional validation options
- * @returns A URLValidationResult object containing validation status and video ID
- * @example
- * ```typescript
- * // Basic usage
- * const result = isValidYouTubeVideoURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
- * console.log(result.isValid); // true
- * console.log(result.videoId); // 'dQw4w9WgXcQ'
- * 
- * // With options
- * const result = isValidYouTubeVideoURL('youtube.com/watch?v=dQw4w9WgXcQ', {
- *   allowNoProtocol: true,
- *   allowNoWWW: true
- * });
- * ```
- */
 export function isValidYouTubeVideoURL(
   url: string,
   options: URLValidationOptions = {}
 ): URLValidationResult {
-  const {
-    allowNoProtocol = true,
-    allowNoWWW = true,
-    allowQueryParams = true
-  } = options;
+  const { allowNoProtocol = true, allowQueryParams = true } = options;
 
-  // Input validation
-  if (!url) {
-    return {
-      isValid: false,
-      error: 'URL cannot be empty'
-    };
+  if (!url || typeof url !== 'string') {
+    return { isValid: false, error: 'URL must be a non-empty string' };
   }
 
-  // Build regex pattern based on options
-  const protocolPattern = allowNoProtocol ? '(https?:\\/\\/)?' : 'https?:\\/\\/';
-  const wwwPattern = allowNoWWW ? '(www\\.)?' : 'www\\.';
-  const queryPattern = allowQueryParams ? '(\\S*)?' : '';
-
-  const pattern = new RegExp(
-    `^${protocolPattern}${wwwPattern}(youtube\\.com\\/watch\\?v=|youtu\\.be\\/)([\\w-]{11})${queryPattern}$`
-  );
-
-  const match = url.match(pattern);
-
-  if (!match) {
-    return {
-      isValid: false,
-      error: 'Invalid YouTube URL format'
-    };
+  let finalUrl = url.trim();
+  if (!/^https?:\/\//i.test(finalUrl)) {
+    if (!allowNoProtocol) return { isValid: false, error: 'Missing protocol (http or https)' };
+    finalUrl = 'https://' + finalUrl;
   }
 
-  return {
-    isValid: true,
-    videoId: match[2]
-  };
+  let parsed: URL;
+  try {
+    parsed = new URL(finalUrl);
+  } catch {
+    return { isValid: false, error: 'Malformed URL' };
+  }
+
+  const hostname = parsed.hostname.toLowerCase().replace(/^www\./, '');
+  const allowedHosts = new Set(['youtube.com', 'm.youtube.com', 'youtu.be']);
+  if (!allowedHosts.has(hostname)) {
+    return { isValid: false, error: 'Unsupported domain' };
+  }
+
+  let videoId: string | null = null;
+  if (hostname === 'youtube.com' || hostname === 'm.youtube.com') {
+    if (parsed.pathname === '/watch') {
+      videoId = parsed.searchParams.get('v');
+    }
+  } else if (hostname === 'youtu.be') {
+    videoId = parsed.pathname.replace(/^\/+|\/+$/g, '');
+  }
+
+  if (!videoId) {
+    return { isValid: false, error: 'Missing video ID' };
+  }
+
+  if (videoId.length !== 11 || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+    return { isValid: false, error: 'Invalid video ID format' };
+  }
+
+  if (/^(.)\1{10}$/.test(videoId)) {
+    return { isValid: false, error: 'Invalid video ID (repeated characters)' };
+  }
+
+  if (!allowQueryParams) {
+    const keys = Array.from(parsed.searchParams.keys());
+    if (!(keys.length === 1 && keys[0] === 'v')) {
+      return { isValid: false, error: 'Extra query parameters not allowed' };
+    }
+  }
+
+  return { isValid: true, videoId };
 }

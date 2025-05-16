@@ -28,7 +28,6 @@ console.log(result.videoId); // 'dQw4w9WgXcQ'
 // With validation options
 const result = isValidYouTubeVideoURL('youtube.com/watch?v=dQw4w9WgXcQ', {
   allowNoProtocol: true,  // Allow URLs without https://
-  allowNoWWW: true,       // Allow URLs without www.
   allowQueryParams: true  // Allow additional query parameters
 });
 
@@ -50,7 +49,6 @@ Validates a YouTube video URL and extracts the video ID.
 - `url` (string): The YouTube URL to validate
 - `options` (optional): Validation options
   - `allowNoProtocol` (boolean): Whether to allow URLs without protocol (default: true)
-  - `allowNoWWW` (boolean): Whether to allow URLs without www (default: true)
   - `allowQueryParams` (boolean): Whether to allow additional query parameters (default: true)
 
 #### Returns
