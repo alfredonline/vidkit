@@ -1,5 +1,44 @@
 import { URLValidationOptions, URLValidationResult } from '../../types';
 
+/**
+ * Validates a YouTube video URL and extracts the video ID
+ * 
+ * This function checks if a given URL is a valid YouTube video URL and extracts the video ID.
+ * It supports various YouTube URL formats including:
+ * - youtube.com/watch?v=VIDEO_ID
+ * - youtu.be/VIDEO_ID
+ * - www.youtube.com/watch?v=VIDEO_ID
+ * - m.youtube.com/watch?v=VIDEO_ID
+ * 
+ * @param url - The YouTube URL to validate
+ * @param options - Optional validation options
+ * @param options.allowNoProtocol - Whether to allow URLs without http/https protocol (default: true)
+ * @param options.allowQueryParams - Whether to allow additional query parameters (default: true)
+ * 
+ * @returns A URLValidationResult object containing:
+ * - isValid: boolean - Whether the URL is valid
+ * - videoId?: string - The extracted video ID if valid
+ * - error?: string - Error message if invalid
+ * 
+ * @example
+ * ```typescript
+ * // Basic usage
+ * const result = isValidYouTubeVideoURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+ * console.log(result.isValid); // true
+ * console.log(result.videoId); // 'dQw4w9WgXcQ'
+ * 
+ * // With options
+ * const result = isValidYouTubeVideoURL('youtube.com/watch?v=dQw4w9WgXcQ', {
+ *   allowNoProtocol: true,
+ *   allowQueryParams: true
+ * });
+ * 
+ * // Invalid URL
+ * const result = isValidYouTubeVideoURL('invalid-url');
+ * console.log(result.isValid); // false
+ * console.log(result.error); // 'Malformed URL'
+ * ```
+ */
 export function isValidYouTubeVideoURL(
   url: string,
   options: URLValidationOptions = {}
@@ -58,4 +97,31 @@ export function isValidYouTubeVideoURL(
   }
 
   return { isValid: true, videoId };
+}
+
+/**
+ * Extracts the video ID from a YouTube URL
+ * 
+ * This is a convenience function that uses isValidYouTubeVideoURL to extract
+ * just the video ID from a YouTube URL. It returns null if the URL is invalid.
+ * 
+ * @param url - The YouTube URL to extract the video ID from (can be in any valid URL format (mobile, etc.))
+ * 
+ * @returns The video ID as a string if the URL is valid, null otherwise
+ * 
+ * @example
+ * ```typescript
+ * // Valid URL
+ * const videoId = getYouTubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+ * console.log(videoId); // 'dQw4w9WgXcQ'
+ * 
+ * // Invalid URL
+ * const videoId = getYouTubeVideoId('invalid-url');
+ * console.log(videoId); // null
+ * ```
+ */
+export function getYouTubeVideoId(url: string): string | null {
+  const result = isValidYouTubeVideoURL(url);
+  if (!result.isValid) return null;
+  return result.videoId ?? null;
 }
