@@ -1,6 +1,6 @@
 {
   "name": "vidkit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A toolkit of utilities for developers working with video platform URLs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
