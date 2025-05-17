@@ -1,4 +1,8 @@
-import { getYouTubeVideoId, isValidYouTubeVideoURL } from '../youtube/index';
+import {
+  getYouTubeVideoId,
+  isValidYouTubeVideoURL,
+  normalizeYouTubeVideoURL,
+} from '../youtube/index';
 
 describe('isValidYouTubeVideoURL', () => {
   // Test valid URLs
@@ -111,6 +115,72 @@ describe('getYouTubeVideoId', () => {
 
   test('should return null for invalid YouTube URLs', () => {
     const result = getYouTubeVideoId('invalid-url');
+    expect(result).toBeNull();
+  });
+});
+
+describe('normalizeYouTubeVideoURL (YouTube only)', () => {
+  // Test valid YouTube URLs
+  test('should normalize standard YouTube URLs', () => {
+    const urls = [
+      'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      'https://youtube.com/watch?v=dQw4w9WgXcQ',
+      'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=120s',
+      'https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=share',
+      'http://youtube.com/watch?v=dQw4w9WgXcQ',
+      'www.youtube.com/watch?v=dQw4w9WgXcQ',
+      'youtube.com/watch?v=dQw4w9WgXcQ',
+    ];
+
+    urls.forEach((url) => {
+      const result = normalizeYouTubeVideoURL(url);
+      expect(result).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+    });
+  });
+
+  // Test shortened youtu.be links
+  test('should normalize youtu.be URLs', () => {
+    const urls = [
+      'https://youtu.be/dQw4w9WgXcQ',
+      'http://youtu.be/dQw4w9WgXcQ',
+      'youtu.be/dQw4w9WgXcQ',
+      'https://youtu.be/dQw4w9WgXcQ?t=30s',
+      'https://youtu.be/dQw4w9WgXcQ/',
+    ];
+
+    urls.forEach((url) => {
+      const result = normalizeYouTubeVideoURL(url);
+      expect(result).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+    });
+  });
+
+  // Test mobile YouTube URLs
+  test('should normalize mobile YouTube URLs', () => {
+    const result = normalizeYouTubeVideoURL('https://m.youtube.com/watch?v=dQw4w9WgXcQ');
+    expect(result).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+  });
+
+  // Test invalid YouTube URLs
+  test('should return null for invalid or incomplete YouTube URLs', () => {
+    const invalidUrls = [
+      '',
+      'not-a-url',
+      'https://www.youtube.com',
+      'https://www.youtube.com/watch',
+      'https://www.youtube.com/watch?v=short',
+      'https://youtu.be/',
+      'https://www.youtube.com/watch?v=tooLongVideoId12345',
+    ];
+
+    invalidUrls.forEach((url) => {
+      const result = normalizeYouTubeVideoURL(url);
+      expect(result).toBeNull();
+    });
+  });
+
+  // Test non-YouTube URLs
+  test('should return null for non-YouTube URLs', () => {
+    const result = normalizeYouTubeVideoURL('https://vimeo.com/12345678');
     expect(result).toBeNull();
   });
 });

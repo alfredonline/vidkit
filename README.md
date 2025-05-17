@@ -52,6 +52,28 @@ const videoId = getYouTubeVideoId('invalid-url');
 console.log(videoId); // null
 ```
 
+### Normalize YouTube URL
+
+```typescript
+import { normalizeYouTubeVideoURL } from 'vidkit';
+
+// Standard watch URL
+const normalized = normalizeYouTubeVideoURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+console.log(normalized); // 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+
+// Short URL
+const normalized = normalizeYouTubeVideoURL('https://youtu.be/dQw4w9WgXcQ');
+console.log(normalized); // 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+
+// Shorts URL
+const normalized = normalizeYouTubeVideoURL('https://youtube.com/shorts/dQw4w9WgXcQ');
+console.log(normalized); // 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+
+// Invalid URL
+const normalized = normalizeYouTubeVideoURL('invalid-url');
+console.log(normalized); // null
+```
+
 ## API Reference
 
 ### `isValidYouTubeVideoURL(url: string, options?: URLValidationOptions): URLValidationResult`
@@ -83,6 +105,18 @@ Extracts the video ID from a YouTube URL. Returns null if the URL is invalid.
 #### Returns
 
 - `string | null`: The video ID if the URL is valid, null otherwise
+
+### `normalizeYouTubeVideoURL(url: string): string | null`
+
+Normalizes any valid YouTube URL format to the standard youtube.com/watch?v=VIDEO_ID format.
+
+#### Parameters
+
+- `url` (string): The YouTube URL to normalize (supports various formats including watch URLs, short URLs, and shorts URLs)
+
+#### Returns
+
+- `string | null`: The normalized URL in the format https://www.youtube.com/watch?v=VIDEO_ID, or null if the URL is invalid
 
 ## Development
 
