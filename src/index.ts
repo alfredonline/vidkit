@@ -1,2 +1,6 @@
 // Export all utilities from this file
-export * from './utils/youtube'; 
+export {
+  isValidYouTubeVideoURL,
+  getYouTubeVideoId,
+  normalizeYouTubeVideoURL
+} from './utils/youtube'; 

@@ -21,21 +21,18 @@ npm install vidkit
 import { isValidYouTubeVideoURL } from 'vidkit';
 
 // Basic usage
-const result = isValidYouTubeVideoURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-console.log(result.isValid); // true
-console.log(result.videoId); // 'dQw4w9WgXcQ'
+const isValid = isValidYouTubeVideoURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+console.log(isValid); // true
 
 // With validation options
-const result = isValidYouTubeVideoURL('youtube.com/watch?v=dQw4w9WgXcQ', {
+const isValid = isValidYouTubeVideoURL('youtube.com/watch?v=dQw4w9WgXcQ', {
   allowNoProtocol: true,  // Allow URLs without https://
   allowQueryParams: true  // Allow additional query parameters
 });
 
 // Handle invalid URLs
-const result = isValidYouTubeVideoURL('invalid-url');
-if (!result.isValid) {
-  console.log(result.error); // 'Invalid YouTube URL format'
-}
+const isValid = isValidYouTubeVideoURL('invalid-url');
+console.log(isValid); // false
 ```
 
 ### Get Video ID
@@ -46,6 +43,12 @@ import { getYouTubeVideoId } from 'vidkit';
 // Basic usage
 const videoId = getYouTubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 console.log(videoId); // 'dQw4w9WgXcQ'
+
+// With validation options
+const videoId = getYouTubeVideoId('youtube.com/watch?v=dQw4w9WgXcQ', {
+  allowNoProtocol: true,
+  allowQueryParams: true
+});
 
 // Invalid URL
 const videoId = getYouTubeVideoId('invalid-url');
@@ -74,11 +77,50 @@ const normalized = normalizeYouTubeVideoURL('invalid-url');
 console.log(normalized); // null
 ```
 
+### Generate YouTube Share URL
+
+```typescript
+import { generateYouTubeShareURL } from 'vidkit';
+
+// Basic usage
+const shareUrl = generateYouTubeShareURL('dQw4w9WgXcQ');
+console.log(shareUrl); // 'https://youtu.be/dQw4w9WgXcQ'
+
+// With parameters (e.g., start time)
+const shareUrlWithTime = generateYouTubeShareURL('dQw4w9WgXcQ', { t: 120 });
+console.log(shareUrlWithTime); // 'https://youtu.be/dQw4w9WgXcQ?t=120'
+```
+
+### Parse YouTube URL
+
+```typescript
+import { parseYouTubeURL } from 'vidkit';
+
+const parsed = parseYouTubeURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=120s');
+console.log(parsed);
+// {
+//   type: 'video',
+//   videoId: 'dQw4w9WgXcQ',
+//   parameters: { v: 'dQw4w9WgXcQ', t: '120s' },
+//   isEmbed: false,
+//   originalUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=120s'
+// }
+```
+
+### Check if URL is a YouTube URL
+
+```typescript
+import { isYouTubeURL } from 'vidkit';
+
+console.log(isYouTubeURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')); // true
+console.log(isYouTubeURL('https://vimeo.com/123456')); // false
+```
+
 ## API Reference
 
-### `isValidYouTubeVideoURL(url: string, options?: URLValidationOptions): URLValidationResult`
+### `isValidYouTubeVideoURL(url: string, options?: URLValidationOptions): boolean`
 
-Validates a YouTube video URL and extracts the video ID.
+Validates a YouTube video URL.
 
 #### Parameters
 
@@ -89,18 +131,18 @@ Validates a YouTube video URL and extracts the video ID.
 
 #### Returns
 
-A `URLValidationResult` object with:
-- `isValid` (boolean): Whether the URL is valid
-- `videoId` (string | undefined): The video ID if valid
-- `error` (string | undefined): Error message if invalid
+- `boolean`: Whether the URL is valid
 
-### `getYouTubeVideoId(url: string): string | null`
+### `getYouTubeVideoId(url: string, options?: URLValidationOptions): string | null`
 
-Extracts the video ID from a YouTube URL. Returns null if the URL is invalid.
+Extracts the video ID from a YouTube URL.
 
 #### Parameters
 
-- `url` (string): The YouTube URL to extract the video ID from (supports all valid YouTube URL formats)
+- `url` (string): The YouTube URL to extract the video ID from
+- `options` (optional): Validation options
+  - `allowNoProtocol` (boolean): Whether to allow URLs without protocol (default: true)
+  - `allowQueryParams` (boolean): Whether to allow additional query parameters (default: true)
 
 #### Returns
 
@@ -117,6 +159,44 @@ Normalizes any valid YouTube URL format to the standard youtube.com/watch?v=VIDE
 #### Returns
 
 - `string | null`: The normalized URL in the format https://www.youtube.com/watch?v=VIDEO_ID, or null if the URL is invalid
+
+### `generateYouTubeShareURL(videoId: string, params?: Record<string, string | number>): string`
+
+Generates a YouTube share URL with specific parameters.
+
+#### Parameters
+- `videoId` (string): The YouTube video ID
+- `params` (optional): An object of query parameters to add to the share URL (e.g., `{ t: 120 }`)
+
+#### Returns
+- `string`: The share URL
+
+### `parseYouTubeURL(url: string): { type, videoId, playlistId, channelId, parameters, isEmbed, originalUrl }`
+
+Parses a YouTube URL into its components (video ID, playlist ID, channel ID, parameters, etc.).
+
+#### Parameters
+- `url` (string): The YouTube URL to parse
+
+#### Returns
+- `object`: An object with the following properties:
+  - `type`: 'video' | 'playlist' | 'channel' | 'short' | 'live' | 'unknown'
+  - `videoId` (string | undefined): The video ID, if present
+  - `playlistId` (string | undefined): The playlist ID, if present
+  - `channelId` (string | undefined): The channel ID, if present
+  - `parameters` (object): All query parameters as key-value pairs
+  - `isEmbed` (boolean): Whether the URL is an embed URL
+  - `originalUrl` (string): The original input URL
+
+### `isYouTubeURL(url: string): boolean`
+
+Checks if a URL is any valid YouTube URL (video, playlist, channel, etc.).
+
+#### Parameters
+- `url` (string): The URL to check
+
+#### Returns
+- `boolean`: `true` if the URL is a YouTube URL, `false` otherwise
 
 ## Development
 

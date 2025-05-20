@@ -22,21 +22,31 @@ export interface URLValidationOptions {
 }
 
 /**
- * Result of URL validation
+ * @deprecated Use getYouTubeVideoId for extracting video IDs
  */
 export interface URLValidationResult {
   /**
    * Whether the URL is valid
    */
   isValid: boolean;
-  
-  /**
-   * The video ID if the URL is valid, undefined otherwise
-   */
+}
+
+/**
+ * Components parsed from a YouTube URL
+ */
+export interface YouTubeURLComponents {
+  type: 'video' | 'playlist' | 'channel' | 'short' | 'live' | 'unknown';
   videoId?: string;
-  
-  /**
-   * Error message if the URL is invalid, undefined otherwise
-   */
-  error?: string;
+  playlistId?: string;
+  channelId?: string;
+  parameters: Record<string, string>;
+  isEmbed: boolean;
+  originalUrl: string;
+}
+
+/**
+ * Options for generating a YouTube share URL
+ */
+export interface YouTubeShareOptions {
+  [key: string]: string | number;
 } 
