@@ -11,6 +11,7 @@ npm install vidkit
 ## Features
 
 - YouTube URL validation and parsing
+- TikTok URL validation and parsing
 - More features coming soon!
 
 ## Usage
@@ -116,9 +117,88 @@ console.log(isYouTubeURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')); // tru
 console.log(isYouTubeURL('https://vimeo.com/123456')); // false
 ```
 
+### TikTok URL Validation
+
+```typescript
+import { isValidTikTokVideoURL } from 'vidkit';
+
+// Basic usage
+const isValid = isValidTikTokVideoURL('https://www.tiktok.com/@username/video/1234567890123456789');
+console.log(isValid); // true
+
+// With validation options
+const isValid = isValidTikTokVideoURL('tiktok.com/@username/video/1234567890123456789', {
+  allowNoProtocol: true,  // Allow URLs without https://
+  allowQueryParams: true  // Allow additional query parameters
+});
+
+// Handle invalid URLs
+const isValid = isValidTikTokVideoURL('invalid-url');
+console.log(isValid); // false
+```
+
+### Get TikTok Video ID
+
+```typescript
+import { getTikTokVideoId } from 'vidkit';
+
+// Basic usage
+const videoId = getTikTokVideoId('https://www.tiktok.com/@username/video/1234567890123456789');
+console.log(videoId); // '1234567890123456789'
+
+// With validation options
+const videoId = getTikTokVideoId('tiktok.com/@username/video/1234567890123456789', {
+  allowNoProtocol: true,
+  allowQueryParams: true
+});
+
+// Invalid URL
+const videoId = getTikTokVideoId('invalid-url');
+console.log(videoId); // null
+```
+
+### Normalize TikTok URL
+
+```typescript
+import { normalizeTikTokVideoURL } from 'vidkit';
+
+// Standard URL
+const normalized = normalizeTikTokVideoURL('https://www.tiktok.com/@username/video/1234567890123456789');
+console.log(normalized); // 'https://www.tiktok.com/@username/video/1234567890123456789'
+
+// Short URL
+const normalized = normalizeTikTokVideoURL('https://vm.tiktok.com/1234567890123456789');
+console.log(normalized); // 'https://www.tiktok.com/@user/video/1234567890123456789'
+
+// Invalid URL
+const normalized = normalizeTikTokVideoURL('invalid-url');
+console.log(normalized); // null
+```
+
+### Generate TikTok Share URL
+
+```typescript
+import { generateTikTokShareURL } from 'vidkit';
+
+// Basic usage
+const shareUrl = generateTikTokShareURL('1234567890123456789');
+console.log(shareUrl); // 'https://vm.tiktok.com/1234567890123456789'
+```
+
+### Check if URL is a TikTok URL
+
+```typescript
+import { isTikTokURL } from 'vidkit';
+
+console.log(isTikTokURL('https://www.tiktok.com/@username/video/1234567890123456789')); // true
+console.log(isTikTokURL('https://youtube.com/watch?v=dQw4w9WgXcQ')); // false
+```
+
 ## API Reference
 
-### `isValidYouTubeVideoURL(url: string, options?: URLValidationOptions): boolean`
+### YouTube Utilities
+
+#### `isValidYouTubeVideoURL(url: string, options?: URLValidationOptions): boolean`
 
 Validates a YouTube video URL.
 
@@ -133,7 +213,7 @@ Validates a YouTube video URL.
 
 - `boolean`: Whether the URL is valid
 
-### `getYouTubeVideoId(url: string, options?: URLValidationOptions): string | null`
+#### `getYouTubeVideoId(url: string, options?: URLValidationOptions): string | null`
 
 Extracts the video ID from a YouTube URL.
 
@@ -148,7 +228,7 @@ Extracts the video ID from a YouTube URL.
 
 - `string | null`: The video ID if the URL is valid, null otherwise
 
-### `normalizeYouTubeVideoURL(url: string): string | null`
+#### `normalizeYouTubeVideoURL(url: string): string | null`
 
 Normalizes any valid YouTube URL format to the standard youtube.com/watch?v=VIDEO_ID format.
 
@@ -160,7 +240,7 @@ Normalizes any valid YouTube URL format to the standard youtube.com/watch?v=VIDE
 
 - `string | null`: The normalized URL in the format https://www.youtube.com/watch?v=VIDEO_ID, or null if the URL is invalid
 
-### `generateYouTubeShareURL(videoId: string, params?: Record<string, string | number>): string`
+#### `generateYouTubeShareURL(videoId: string, params?: Record<string, string | number>): string`
 
 Generates a YouTube share URL with specific parameters.
 
@@ -171,7 +251,7 @@ Generates a YouTube share URL with specific parameters.
 #### Returns
 - `string`: The share URL
 
-### `parseYouTubeURL(url: string): { type, videoId, playlistId, channelId, parameters, isEmbed, originalUrl }`
+#### `parseYouTubeURL(url: string): { type, videoId, playlistId, channelId, parameters, isEmbed, originalUrl }`
 
 Parses a YouTube URL into its components (video ID, playlist ID, channel ID, parameters, etc.).
 
@@ -188,7 +268,7 @@ Parses a YouTube URL into its components (video ID, playlist ID, channel ID, par
   - `isEmbed` (boolean): Whether the URL is an embed URL
   - `originalUrl` (string): The original input URL
 
-### `isYouTubeURL(url: string): boolean`
+#### `isYouTubeURL(url: string): boolean`
 
 Checks if a URL is any valid YouTube URL (video, playlist, channel, etc.).
 
@@ -197,6 +277,70 @@ Checks if a URL is any valid YouTube URL (video, playlist, channel, etc.).
 
 #### Returns
 - `boolean`: `true` if the URL is a YouTube URL, `false` otherwise
+
+### TikTok Utilities
+
+#### `isValidTikTokVideoURL(url: string, options?: URLValidationOptions): boolean`
+
+Validates a TikTok video URL.
+
+#### Parameters
+
+- `url` (string): The TikTok URL to validate
+- `options` (optional): Validation options
+  - `allowNoProtocol` (boolean): Whether to allow URLs without protocol (default: true)
+  - `allowQueryParams` (boolean): Whether to allow additional query parameters (default: true)
+
+#### Returns
+
+- `boolean`: Whether the URL is valid
+
+#### `getTikTokVideoId(url: string, options?: URLValidationOptions): string | null`
+
+Extracts the video ID from a TikTok URL.
+
+#### Parameters
+
+- `url` (string): The TikTok URL to extract the video ID from
+- `options` (optional): Validation options
+  - `allowNoProtocol` (boolean): Whether to allow URLs without protocol (default: true)
+  - `allowQueryParams` (boolean): Whether to allow additional query parameters (default: true)
+
+#### Returns
+
+- `string | null`: The video ID if the URL is valid, null otherwise
+
+#### `normalizeTikTokVideoURL(url: string): string | null`
+
+Normalizes any valid TikTok URL format to the standard tiktok.com/@username/video/VIDEO_ID format.
+
+#### Parameters
+
+- `url` (string): The TikTok URL to normalize (supports various formats including standard URLs and short URLs)
+
+#### Returns
+
+- `string | null`: The normalized URL in the format https://www.tiktok.com/@username/video/VIDEO_ID, or null if the URL is invalid
+
+#### `generateTikTokShareURL(videoId: string): string`
+
+Generates a TikTok share URL.
+
+#### Parameters
+- `videoId` (string): The TikTok video ID
+
+#### Returns
+- `string`: The share URL in the format https://vm.tiktok.com/VIDEO_ID
+
+#### `isTikTokURL(url: string): boolean`
+
+Checks if a URL is any valid TikTok URL.
+
+#### Parameters
+- `url` (string): The URL to check
+
+#### Returns
+- `boolean`: Whether the URL is a valid TikTok URL
 
 ## Development
 

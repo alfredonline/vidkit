@@ -3,4 +3,12 @@ export {
   isValidYouTubeVideoURL,
   getYouTubeVideoId,
   normalizeYouTubeVideoURL
-} from './utils/youtube'; 
+} from './utils/youtube';
+
+export {
+  isValidTikTokVideoURL,
+  getTikTokVideoId,
+  normalizeTikTokVideoURL,
+  isTikTokURL,
+  generateTikTokShareURL
+} from './utils/tiktok'; 

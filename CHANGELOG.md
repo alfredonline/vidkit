@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- TikTok URL validation and parsing utilities:
+  - `isValidTikTokVideoURL` function to validate TikTok video URLs
+  - `getTikTokVideoId` function to extract video IDs from TikTok URLs
+  - `normalizeTikTokVideoURL` function to convert any valid TikTok URL format to the standard format
+  - `generateTikTokShareURL` function to generate TikTok share URLs
+  - `isTikTokURL` function to check if a URL is any valid TikTok URL
+  - Support for various TikTok URL formats:
+    - Standard URLs (tiktok.com/@username/video/VIDEO_ID)
+    - Short URLs (vm.tiktok.com/VIDEO_ID)
+  - Configurable validation options:
+    - Protocol validation
+    - Query parameter validation
+    - Username validation
+- Documentation and unit tests for TikTok utilities
 - `generateYouTubeShareURL` function to generate a YouTube share URL with specific parameters
 - `parseYouTubeURL` function to parse a YouTube URL into its components (video ID, playlist ID, channel ID, parameters, etc.)
 - `isYouTubeURL` function to check if a URL is any valid YouTube URL (video, playlist, channel, etc.)
